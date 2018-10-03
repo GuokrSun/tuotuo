@@ -96,7 +96,8 @@
         // 吨数
             const dun = company.replace(/[^0-9]/ig,"");
             company = isCompany(company)
-            if (company !== '') {
+            var thatSelect = $('#products select').eq(ProductIndex - 1)
+            if (company !== '' && thatSelect.length === 0) {
                 $('#products').append(`<div class="weui-cell weui-cell_select weui-cell_select-after">
                     <div class="weui-cell__hd">
                         <label class="weui-label" style="width: 3em;">产品</label>
@@ -128,7 +129,7 @@
                 </div>`);
             }
                 // 产品
-                ji = $('#products select').eq(ProductIndex - 1).find('option:checked').text();
+                ji = thatSelect.find('option:checked').text();
                 const length = list.length
                 // 司机电话
                     const tel = list[length-2].replace(/[^0-9]/ig,"");
