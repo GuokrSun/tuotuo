@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+﻿<!DOCTYPE HTML>
 <html>
 <head>
     <meta charset="utf-8">
@@ -55,35 +55,51 @@
 <script type="text/javascript">
     $(function(){
         $('body').on('input', '#Paste', function() {
+            $('#products').html('').empty();
             generate();
         });
     });
     //生成
     function generate(el) {
-        Reset();
+        ProductIndex = 1;
+        thatProduct = '';
         let Paste = $('#Paste').val();
         Paste = Paste.split('\n\n')[0];
         Paste = Paste.split('\n');
-        // 客户
-            let zong = Paste[0]
-            if (zong.search("客户") != -1) {
-                const zong0 = zong.substr(2,1)
-                if (zong0 === ':' || zong0 === '：') {
-                    zong = zong.substr(3,1)
+        if (Paste.length === 1) {
+            railwayWagon(Paste[0]);
+        } else {
+            // 客户
+                let zong = Paste[0]
+                if (zong.search("客户") != -1) {
+                    const zong0 = zong.substr(2,1)
+                    if (zong0 === ':' || zong0 === '：') {
+                        zong = zong.substr(3,1)
+                    } else {
+                        zong = zong.substr(2,1)
+                    }
                 } else {
-                    zong = zong.substr(2,1)
+                    zong = zong.substr(0,1)
                 }
-            } else {
-                zong = zong.substr(0,1)
-            }
-        // 判断产品列表数量
-            getProductList(Paste, zong);
+            // 判断产品列表数量
+                getProductList(Paste, zong);
+        }
     }
-    // 重置
-    function Reset(argument) {
-        ProductIndex = 1;
-        thatProduct = '';
-        if ($('#products select').lenth === 0) $('#products').html('').empty();
+    // 车皮
+    function railwayWagon(list) {
+        list = list.split('，');
+        if ($('#products select').length === 0) setSelectDom();
+        // 产品
+        let ji = $('#products select').find('option:checked').text();
+        // 总
+        let zong = list[0].split('发')[1].substr(0,1);
+        // 车站
+        let zhan = list[1].substr(3,list[1].length);
+        // 车皮号
+        let carNum = list[2].substr(4,list[2].length);
+        // 快递单号
+        let expressNum = list[4].substr(5,list[4].length);
+        $('#generate').val(`${zong}总，您好！${isCompany(list[0])}${getDate()}${zhan}供货车皮：${ji} 60吨，已上站。车皮号：${carNum}，车皮小票邮寄EMS快递，快递单号：${expressNum}，请您查收！感谢您对我公司的支持！合作愉快！`);
     }
     // 判断产品列表数量
     let ProductIndex = 1;
@@ -94,40 +110,10 @@
         // 品牌
             let company = list[ProductIndex];
         // 吨数
-            const dun = company.replace(/[^0-9]/ig,"");
+            const dun = company.replace(/[^\d.]/g,'');
             company = isCompany(company)
             if (company !== '') {
-                if ($('#products select').eq(ProductIndex - 1).length === 0) {
-                    $('#products').append(`<div class="weui-cell weui-cell_select weui-cell_select-after">
-                        <div class="weui-cell__hd">
-                            <label class="weui-label" style="width: 3em;">产品</label>
-                        </div>
-                        <div class="weui-cell__bd">
-                            <select class="weui-select" name="product">
-                                <option value="1">木美土里微生物菌剂(粉剂)-2亿40kg</option>
-                                <option value="2">木美土里富桥微生物菌剂(粉剂)-2亿40kg</option>
-                                <option value="3">木美土里中微量元素菌肥(粉剂)-红袋20kg</option>
-                                <option value="4">枫丹百丽微生物菌剂(粉剂)-2亿40kg</option>
-                                <option value="5">绿色家族微生物菌剂(粉剂)-2亿40kg</option>
-                                <option value="6">枫丹百丽中微量元素20kg</option>
-                                <option value="7">木美土里优质有机肥(粉剂)40kg</option>
-                                <option value="8">绿色家族优质有机肥(粉剂)40kg</option>
-                                <option value="9">根果良品微生物菌剂(粉剂)40kg</option>
-                                <option value="10">根果良品中微量元素菌剂(粉剂)20kg</option>
-                                <option value="11">根果良品有机肥(粉剂)40kg</option>
-                                <option value="12">疏沃生物有机肥(粉剂)40kg</option>
-                                <option value="13">欣沃达微生物菌剂(粉剂)-2亿40kg</option>
-                                <option value="14">木美土里发粪宝500ml/瓶(2瓶装)</option>
-                                <option value="15">枫丹百丽有机肥(粉剂)40kg</option>
-                                <option value="16">木美土里中微量元素菌肥(粉剂)-蓝袋20kg</option>
-                                <option value="17">木美土里微生物菌剂(粉剂)-升级版40kg</option>
-                                <option value="18">木美土里普施菌肥(粉剂)40kg</option>
-                                <option value="19">1号二扩菌剂30kg</option>
-                                <option value="20">2号二扩菌剂30kg</option>
-                            </select>
-                        </div>
-                    </div>`);
-                }
+                if ($('#products select').eq(ProductIndex - 1).length === 0) setSelectDom();
                 // 产品
                 ji = $('#products select').eq(ProductIndex - 1).find('option:checked').text();
             } else {
@@ -136,7 +122,14 @@
                     const tel = list[length-2].replace(/[^0-9]/ig,"");
                 // 每吨钱数
                     const money = list[length-1].split('吨')[0].replace(/[^0-9]/ig,"");
-                $('#generate').val(`${zong}总，您好！${thatProduct}，运费到付每吨${money}元，司机电话：${tel}，请您查收！感谢您对我公司的支持！合作愉快！`);
+                // 称谓
+                    let zongName = zong + '总';
+                    if (list[0].search("代玉成") != -1) {
+                        zongName = '唐总'
+                    } else if (list[0].search("杨高潮") != -1) {
+                        zongName = '苏经理'
+                    }
+                $('#generate').val(`${zongName}，您好！${thatProduct}，运费到付每吨${money}元，司机电话：${tel}，请您查收！感谢您对我公司的支持！合作愉快！`);
                 return;
             }
         if (ProductIndex === 1) {
@@ -166,6 +159,38 @@
         } else {
             return ''
         }
+    }
+    // 生成下拉框
+    function setSelectDom(){
+        $('#products').append(`<div class="weui-cell weui-cell_select weui-cell_select-after">
+            <div class="weui-cell__hd">
+                <label class="weui-label" style="width: 3em;">产品</label>
+            </div>
+            <div class="weui-cell__bd">
+                <select class="weui-select" name="product">
+                    <option value="1">木美土里微生物菌剂(粉剂)-2亿40kg</option>
+                    <option value="2">木美土里富桥微生物菌剂(粉剂)-2亿40kg</option>
+                    <option value="3">木美土里中微量元素菌肥(粉剂)-红袋20kg</option>
+                    <option value="4">枫丹百丽微生物菌剂(粉剂)-2亿40kg</option>
+                    <option value="5">绿色家族微生物菌剂(粉剂)-2亿40kg</option>
+                    <option value="6">枫丹百丽中微量元素20kg</option>
+                    <option value="7">木美土里优质有机肥(粉剂)40kg</option>
+                    <option value="8">绿色家族优质有机肥(粉剂)40kg</option>
+                    <option value="9">根果良品微生物菌剂(粉剂)40kg</option>
+                    <option value="10">根果良品中微量元素菌剂(粉剂)20kg</option>
+                    <option value="11">根果良品有机肥(粉剂)40kg</option>
+                    <option value="12">疏沃生物有机肥(粉剂)40kg</option>
+                    <option value="13">欣沃达微生物菌剂(粉剂)-2亿40kg</option>
+                    <option value="14">木美土里发粪宝500ml/瓶(2瓶装)</option>
+                    <option value="15">枫丹百丽有机肥(粉剂)40kg</option>
+                    <option value="16">木美土里中微量元素菌肥(粉剂)-蓝袋20kg</option>
+                    <option value="17">木美土里微生物菌剂(粉剂)-升级版40kg</option>
+                    <option value="18">木美土里普施菌肥(粉剂)40kg</option>
+                    <option value="19">1号二扩菌剂30kg</option>
+                    <option value="20">2号二扩菌剂30kg</option>
+                </select>
+            </div>
+        </div>`);
     }
     // 复制
     function copy(el) {
