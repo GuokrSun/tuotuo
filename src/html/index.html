@@ -126,9 +126,9 @@
                         </select>
                     </div>
                 </div>`);
+            }
                 // 产品
                 ji = $('#products select').eq(ProductIndex - 1).find('option:checked').text();
-            } else {
                 const length = list.length
                 // 司机电话
                     const tel = list[length-2].replace(/[^0-9]/ig,"");
@@ -136,7 +136,6 @@
                     const money = list[length-1].split('吨')[0].replace(/[^0-9]/ig,"");
                 $('#generate').val(`${zong}总，您好！${thatProduct}，运费到付每吨${money}元，司机电话：${tel}，请您查收！感谢您对我公司的支持！合作愉快！`);
                 return;
-            }
         if (ProductIndex === 1) {
             // 地址
             const addr = $('#addr').val();
