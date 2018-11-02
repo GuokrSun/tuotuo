@@ -64,8 +64,8 @@
         ProductIndex = 1;
         thatProduct = '';
         let Paste = $('#Paste').val();
+        Paste = Paste.split('\n\n')[0];
         Paste = Paste.split('\n');
-        Paste = Paste.notempty();
         if (Paste.length === 1) {
             railwayWagon(Paste[0]);
         } else {
@@ -73,12 +73,10 @@
                 let zong = Paste[0]
                 if (zong.search("客户") != -1) {
                     const zong0 = zong.substr(2,1)
-                    if (zong.search(":") != -1) {
-                        zong = zong.substr(zong.search(":") + 1, 1)
-                    } else if (zong.search("：") != -1) {
-                        zong = zong.substr(zong.search("：") + 1, 1)
+                    if (zong0 === ':' || zong0 === '：') {
+                        zong = zong.substr(3,1)
                     } else {
-                        zong = zong.substr(zong.search("客户") + 2, 1)
+                        zong = zong.substr(2,1)
                     }
                 } else {
                     zong = zong.substr(0,1)
@@ -123,7 +121,7 @@
                 // 司机电话
                     const tel = list[length-2].replace(/[^0-9]/ig,"");
                 // 每吨钱数
-                    const money = list[length-1].split('元')[0].replace(/[^0-9]/ig,"");
+                    const money = list[length-1].split('吨')[0].replace(/[^0-9]/ig,"");
                 // 称谓
                     let zongName = zong + '总';
                     if (list[0].search("代玉成") != -1) {
